@@ -13,6 +13,7 @@ const TampleCard = () => {
   if (isFetching) {
     return <Spinner />;
   }
+  
   return (
     <div className="grid lg:grid-cols-5  md:grid-cols-3 grid-cols-2 gap-3 md:gap-7 md:mt-12 mt-7">
       {tempelData?.data?.data.map((temple: TTemple) => (
@@ -34,7 +35,7 @@ const TampleCard = () => {
               </h3>
               <div className="flex gap-1 justify-center md:items-center text-sm ">
               <div className="w-3"><SlLocationPin className="md:mt-0 mt-1" /></div>
-                <p className="truncate overflow-hidden whitespace-nowrap">{temple.address}</p>
+                <p className="truncate overflow-hidden whitespace-nowrap">{temple.location}</p>
               </div>
             </div>
           </Link>

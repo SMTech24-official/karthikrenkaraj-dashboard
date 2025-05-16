@@ -2,8 +2,7 @@ import NavBar from "@/components/shared/NavBar";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Yargo",
-  description: "Transform Voice, Images, and Videos into Text",
+  title: "Ubhayam",
 };
 
 const CommonLayout = ({ children }: { children: React.ReactNode }) => {

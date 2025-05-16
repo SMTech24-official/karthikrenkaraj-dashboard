@@ -102,7 +102,7 @@ const Navbar = () => {
       </div>
 
       <div className="md:w-32 w-20">
-        <Image src={logo} height={70} width={100} alt="logo" />
+        <Image src={logo} height={60} width={60} alt="logo" />
       </div>
 
       {/* larg device menu  */}

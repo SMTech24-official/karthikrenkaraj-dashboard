@@ -31,7 +31,7 @@ const AddTampleModal = () => {
     formData.append("data", JSON.stringify(data));
 
     try {
-      const res:any = await addTemple(formData);
+      const res: any = await addTemple(formData);
       if (res.data) {
         toast.success("Temepe Added Successfully", { id: toastId });
         setOpen(false);
@@ -108,32 +108,80 @@ const AddTampleModal = () => {
                     placeholder="Upload Image"
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">Location</h3>
+                  <MyFormInput
+                    type="text"
+                    name="location"
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
+                    placeholder="Enter Location"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">City</h3>
+                  <MyFormInput
+                    type="text"
+                    name="city"
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
+                    placeholder="Enter City"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">State</h3>
+                  <MyFormInput
+                    type="text"
+                    name="state"
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
+                    placeholder="Enter State"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">Zip</h3>
+                  <MyFormInput
+                    type="text"
+                    name="zip"
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
+                    placeholder="Enter Zip"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">Country</h3>
+                  <MyFormInput
+                    type="text"
+                    name="country"
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
+                    placeholder="Enter Country"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">Phone Number</h3>
+                  <MyFormInput
+                    name="phoneNumber"
+                    rows={1}
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
+                    placeholder="Enter Phone Number"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <h3 className="md:text-3xl font-medium">
-                  Enter Temple Location
-                </h3>
-                <MyFormInput
-                  type="text"
-                  name="address"
-                  inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
-                  placeholder="Enter Temple Information Here"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="md:text-3xl font-medium">
-                  Enter Temple Information
-                </h3>
-                <MyFormInput
+              
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">Description</h3>
+                  <MyFormInput
                   type="textarea"
-                  name="description"
-                  rows={1}
-                  inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[50px]"
-                  placeholder="Enter Temple Information Here"
-                />
-              </div>
+                    name="description"
+                    rows={3}
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-[20px]"
+                    placeholder="Enter Description"
+                  />
+                </div>
+                
             </MyFormWrapper>
           </div>
         </DialogHeader>

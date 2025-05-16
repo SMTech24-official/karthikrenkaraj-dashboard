@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
@@ -9,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { AiOutlinePlus } from "react-icons/ai";
-import { FieldValues } from "react-hook-form";
+import { FieldValues, useFieldArray, useForm } from "react-hook-form";
 import { FaSave } from "react-icons/fa";
 import { useState } from "react";
 import MyFormWrapper from "@/components/form/MyFormWrapper";
@@ -26,6 +27,16 @@ const AddCauseModal = () => {
   const [addCause] = useAddCauseMutation();
   const { data: causeCategory } = useCauseCategoryQuery(undefined);
 
+  const methods = useForm({
+    defaultValues: { priceList: [{ size: "", price: 0 }] },
+  });
+  const { control } = methods;
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "priceList",
+  });
+
   // causes category options
   const causeOptions = causeCategory?.data.map(
     (item: { id: string; name: string }) => ({
@@ -39,19 +50,37 @@ const AddCauseModal = () => {
   const onSubmit = async (data: FieldValues) => {
     const toastId = toast.loading("Adding Cause...");
 
-    const price = parseFloat(data.price);
     const quantity = parseInt(data.quantity, 10);
 
-    if (isNaN(price) || price <= 0) {
-      toast.error("Invalid price. Please enter a valid number.");
-      return;
-    }
     if (isNaN(quantity) || quantity < 1) {
-      toast.error("Invalid quantity. Must be at least 1.");
+      toast.error("Invalid quantity. Must be at least 1.", { id: toastId });
       return;
     }
 
-    const formattedData = { ...data, price, quantity };
+    const priceData = data.priceList;
+
+    const priceList = priceData.map((item: any) => {
+      const price = parseInt(item.price, 10);
+
+      if (isNaN(price) || price < 1) {
+        toast.error("Invalid quantity. Must be at least 1.", { id: toastId });
+        return;
+      }
+
+      return {
+        ...item,
+        price,
+      };
+    });
+
+    const {
+      images,
+      priceList: pricArray,
+      quantity: qualityData,
+      ...restData
+    } = data;
+
+    const formattedData = { ...restData, quantity };
 
     const formData = new FormData();
 
@@ -65,10 +94,12 @@ const AddCauseModal = () => {
       });
     }
 
+    formData.append("priceList", JSON.stringify(priceList));
+
     formData.append("data", JSON.stringify(formattedData));
-    
+
     try {
-      const res:any = await addCause(formData);
+      const res: any = await addCause(formData);
       if (res.data) {
         toast.success("Cause Added Successfully", { id: toastId });
         setOpen(false);
@@ -89,9 +120,9 @@ const AddCauseModal = () => {
         <AiOutlinePlus /> Add Cause
       </DialogTrigger>
 
-      <DialogContent className="max-w-[935px]  md:!rounded-[50px] !rounded-3xl [&>button]:hidden">
+      <DialogContent className="max-w-[935px] md:!rounded-[50px] !rounded-3xl [&>button]:hidden ">
         <DialogHeader>
-          <div className="">
+          <div className="h-screen overflow-y-auto py-7">
             <MyFormWrapper onSubmit={onSubmit}>
               <DialogTitle className="md:mb-7 mb-3">
                 <div className="flex md:flex-row flex-col justify-between items-center md:gap-1 gap-4">
@@ -144,19 +175,18 @@ const AddCauseModal = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="md:text-3xl font-medium">Cause Price</h3>
-                  <MyFormInput
-                    type="text"
-                    name="price"
-                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
-                    placeholder="Enter Cause Price"
-                  />
-                </div>
-                <div className="space-y-2">
                   <h3 className="md:text-3xl font-medium">Cause Quantity</h3>
                   <MyFormInput
                     type="text"
                     name="quantity"
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
+                    placeholder="Enter Cause Quantity"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="md:text-3xl font-medium">Delivery Time</h3>
+                  <MyFormInput
+                    name="deliveryTimeLine"
                     inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
                     placeholder="Enter Cause Quantity"
                   />
@@ -181,6 +211,48 @@ const AddCauseModal = () => {
                   rows={3}
                   placeholder="Enter Cause Quantity"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="md:text-3xl font-medium">Price List</h3>
+                {fields.map((field, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-5 bg-[#f4f6f1] p-1 rounded-xl"
+                  >
+                    <div>
+                      <h3 className="font-medium">Size</h3>
+                      <MyFormInput
+                        name={`priceList.${idx}.size`}
+                        inputClassName="rounded-full"
+                        placeholder="Enter Cause Size"
+                      />
+                    </div>
+                    <div>
+                      <h3 className=" font-medium">Price</h3>
+                      <MyFormInput
+                        name={`priceList.${idx}.price`}
+                        inputClassName="rounded-full"
+                        placeholder="Enter Cause Price"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => remove(idx)}
+                      className="text-red-500"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => append({ size: "", price: 0 })}
+                  className="mt-2 text-sm text-primary bg-black px-4 py-2 rounded-full"
+                >
+                  Add Size
+                </button>
               </div>
             </MyFormWrapper>
           </div>
