@@ -63,7 +63,7 @@ const AddCauseModal = () => {
       const price = parseInt(item.price, 10);
 
       if (isNaN(price) || price < 1) {
-        toast.error("Invalid quantity. Must be at least 1.", { id: toastId });
+        toast.error("Invalid price. Must be a unmber.", { id: toastId });
         return;
       }
 

@@ -67,7 +67,7 @@ const EditTampleModal = ({ id }: { id: string }) => {
       </DialogTrigger>
 
       <DialogContent className="max-w-[935px]  md:!rounded-[50px] !rounded-3xl [&>button]:hidden">
-        <DialogHeader>
+        <DialogHeader className="h-screen overflow-y-auto py-6">
           <div>
             <MyFormWrapper onSubmit={onSubmit} defaultValues={tempeData?.data}>
               <DialogTitle className="md:mb-7 mb-3">

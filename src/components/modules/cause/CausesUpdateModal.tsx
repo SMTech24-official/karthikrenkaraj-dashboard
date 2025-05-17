@@ -29,11 +29,11 @@ const statusOptions = [
     value: "OPEN_FOR_FOUNDING",
     label: "OPEN_FOR_FOUNDING",
   },
-  {
-    keyOption: "03",
-    value: "IN_PROGRESS",
-    label: "IN_PROGRESS",
-  },
+  // {
+  //   keyOption: "03",
+  //   value: "IN_PROGRESS",
+  //   label: "IN_PROGRESS",
+  // },
   {
     keyOption: "04",
     value: "COMPLETED",
@@ -41,7 +41,12 @@ const statusOptions = [
   },
 ];
 
-const CausesUpdateModal = ({ data }: { data: any }) => {
+ type TData = {
+  id: string;
+  status: "OPEN_FOR_FOUNDING" | "COMPLETED"
+ }
+
+const CausesUpdateModal = ({ data }: { data: TData }) => {
   const [open, setOpen] = useState(false);
   const [UpdateSuggestCauses] = useUpdateSuggestCausesMutation();
 
@@ -87,7 +92,7 @@ const CausesUpdateModal = ({ data }: { data: any }) => {
       <DialogContent className="max-w-[935px] md:!rounded-[50px] !rounded-3xl [&>button]:hidden">
         <DialogHeader>
           <div>
-            <MyFormWrapper onSubmit={onSubmit} defaultValues={data}>
+            <MyFormWrapper onSubmit={onSubmit}>
               <DialogTitle className="md:mb-7 mb-3">
                 <div className="flex md:flex-row flex-col justify-between items-center md:gap-1 gap-4">
                   <div className="">
