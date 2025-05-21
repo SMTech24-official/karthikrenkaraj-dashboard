@@ -81,7 +81,7 @@ const causeApi = baseApi.injectEndpoints({
           method: "GET",
         };
       },
-      providesTags: ['Category']
+      providesTags: ["Category"],
     }),
 
     addCauseCategory: builder.mutation({
@@ -89,20 +89,20 @@ const causeApi = baseApi.injectEndpoints({
         return {
           url: `/type`,
           method: "POST",
-          body: data
+          body: data,
         };
       },
-      invalidatesTags: ['Category']
+      invalidatesTags: ["Category"],
     }),
 
     deleteCauseCategory: builder.mutation({
       query: (id) => {
         return {
           url: `/type/${id}`,
-          method: "DELETE"
+          method: "DELETE",
         };
       },
-      invalidatesTags: ['Category']
+      invalidatesTags: ["Category"],
     }),
 
     allCausesForAdmin: builder.query({
@@ -136,6 +136,27 @@ const causeApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["Causes"],
     }),
+
+    getAllDonation: builder.query({
+      query: () => {
+        return {
+          url: `/donation/get-list-donation`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Donation"],
+    }),
+
+    addProfOfDelivery: builder.mutation({
+      query: (arg) => {
+        return {
+          url: `/donation/admin/add/prof/${arg.id}`,
+          method: "POST",
+          body: arg.data,
+        };
+      },
+      invalidatesTags: ["Donation"],
+    }),
   }),
 });
 
@@ -152,5 +173,7 @@ export const {
   useAddCauseCategoryMutation,
   useAllCausesForAdminQuery,
   useUpdateSuggestCausesMutation,
-  useAddLinksToSgussedCauesMutation
+  useAddLinksToSgussedCauesMutation,
+  useGetAllDonationQuery,
+  useAddProfOfDeliveryMutation,
 } = causeApi;

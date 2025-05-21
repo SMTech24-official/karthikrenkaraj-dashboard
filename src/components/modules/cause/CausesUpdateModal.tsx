@@ -14,7 +14,10 @@ import { MdOutlineEdit } from "react-icons/md";
 import MyFormWrapper from "@/components/form/MyFormWrapper";
 import MyFormInput from "@/components/form/MyFormInput";
 import { toast } from "sonner";
-import { useUpdateSuggestCausesMutation } from "@/redux/features/cause/cause.api";
+import {
+  useAddProfOfDeliveryMutation,
+  useUpdateSuggestCausesMutation,
+} from "@/redux/features/cause/cause.api";
 import { DialogDescription } from "@radix-ui/react-dialog";
 
 // const statusOptions = [
@@ -48,28 +51,47 @@ type TData = {
 const CausesUpdateModal = ({ data }: { data: TData }) => {
   const [open, setOpen] = useState(false);
   const [UpdateSuggestCauses] = useUpdateSuggestCausesMutation();
+  const [addProf] = useAddProfOfDeliveryMutation();
 
   // form submit handler
   const onSubmit = async (payload: FieldValues) => {
     const toastId = toast.loading("Updating...");
 
-    const price = parseFloat(payload.totalAmount);
+    let otherData;
 
-    if (isNaN(price) || price <= 0) {
-      toast.error("Invalid price. Please enter a valid number.");
-      return;
+    if (data.status === "OPEN_FOR_FOUNDING") {
+      const price = parseFloat(payload.totalAmount);
+
+      if (isNaN(price) || price <= 0) {
+        toast.error("Invalid price. Please enter a valid number.");
+        return;
+      }
+
+      otherData = {
+        price,
+        status: data.status,
+        Specifications: payload.Specifications,
+      };
+    } else {
+      otherData = {
+        descriptions: payload.descriptions,
+      };
     }
-
-    const otherData = {
-      price,
-      status: data.status,
-      Specifications: payload.Specifications,
-    };
 
     const formData = new FormData();
 
-    formData.append("image", payload.image);
     formData.append("data", JSON.stringify(otherData));
+
+    if (data.status === "OPEN_FOR_FOUNDING") {
+      formData.append("image", payload.image);
+    } else {
+      const files = payload.image;
+      if (files && files.length) {
+        for (const file of files) {
+          formData.append("images", file); 
+        }
+      }
+    }
 
     const updatableData = {
       id: data.id,
@@ -77,7 +99,14 @@ const CausesUpdateModal = ({ data }: { data: TData }) => {
     };
 
     try {
-      const res: any = await UpdateSuggestCauses(updatableData);
+      let res: any;
+
+      if (data.status === "OPEN_FOR_FOUNDING") {
+        res = await UpdateSuggestCauses(updatableData);
+      } else if (data.status === "COMPLETED") {
+        res = await addProf(updatableData);
+      }
+
       if (res.data) {
         toast.success("Updated Successfully", { id: toastId });
         setOpen(false);
@@ -132,30 +161,43 @@ const CausesUpdateModal = ({ data }: { data: TData }) => {
               </DialogTitle>
               <DialogDescription></DialogDescription>
 
-              <div className="grid md:grid-cols-2 grid-cols-1 md:gap-5 gap-3">
-                <div className="space-y-2">
-                  <h3 className="md:text-3xl font-medium">Price</h3>
-                  <MyFormInput
-                    type="text"
-                    name="totalAmount"
-                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
-                    placeholder="Enter Cause Name"
-                  />
-                </div>
+              <div className="">
+                {data.status === "OPEN_FOR_FOUNDING" && (
+                  <div className="space-y-2">
+                    <h3 className="md:text-3xl font-medium">Price</h3>
+                    <MyFormInput
+                      type="text"
+                      name="totalAmount"
+                      inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
+                      placeholder="Enter Cause Name"
+                    />
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <h3 className="md:text-3xl font-medium">Image</h3>
                   <MyFormInput
                     type="file"
+                    isMultiple={
+                      data.status === "OPEN_FOR_FOUNDING" ? false : true
+                    }
                     name="image"
-                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
+                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-2xl"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <h3 className="md:text-3xl font-medium">Specifications</h3>
+                <h3 className="md:text-3xl font-medium">
+                  {data.status === "OPEN_FOR_FOUNDING"
+                    ? "Specifications"
+                    : "Descriptions"}
+                </h3>
                 <MyFormInput
-                  name="specifications"
+                  name={`${
+                    data.status === "OPEN_FOR_FOUNDING"
+                      ? "specifications"
+                      : "descriptions"
+                  }`}
                   type="textarea"
                   inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-2xl"
                   placeholder="Enter Specifications"

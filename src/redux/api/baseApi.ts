@@ -23,7 +23,7 @@ export const baseApi = createApi({
     },
   }),
   endpoints: () => ({}),
-  tagTypes: ["User", "Temple", "Causes", "Category"],
+  tagTypes: ["User", "Temple", "Causes", "Category", "Donation"],
 });
 
 export default baseApi;
