@@ -224,7 +224,6 @@ const EditCauseModal = ({ id }: { id: string }) => {
                 </div>
               </div>
 
-              {/* ========== */}
               <div className="grid md:grid-cols-2 grid-cols-1 md:gap-5 gap-3">
                 <div className="space-y-2">
                   <h3 className="md:text-3xl font-medium">Cause Name</h3>
@@ -235,18 +234,16 @@ const EditCauseModal = ({ id }: { id: string }) => {
                     placeholder="Enter Cause Name"
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <h3 className="md:text-3xl font-medium">
-                    Upload Cause Picture
-                  </h3>
-                  <MyFormInput
-                    type="file"
-                    name="images"
-                    isMultiple
-                    inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
-                    placeholder="Upload Image"
+                  <h3 className="md:text-3xl font-medium">Cause Category</h3>
+                  <MyFormSelect
+                    name="type"
+                    options={causeOptions}
+                    selectClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
                   />
                 </div>
+
                 <div className="space-y-2">
                   <h3 className="md:text-3xl font-medium">Cause Quantity</h3>
                   <MyFormInput
@@ -267,11 +264,15 @@ const EditCauseModal = ({ id }: { id: string }) => {
               </div>
 
               <div className="space-y-2">
-                <h3 className="md:text-3xl font-medium">Cause Category</h3>
-                <MyFormSelect
-                  name="type"
-                  options={causeOptions}
-                  selectClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
+                <h3 className="md:text-3xl font-medium">
+                  Upload Cause Picture
+                </h3>
+                <MyFormInput
+                  type="file"
+                  name="images"
+                  isMultiple={true}
+                  inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-xl"
+                  placeholder="Upload Image"
                 />
               </div>
 

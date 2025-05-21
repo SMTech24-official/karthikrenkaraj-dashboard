@@ -3,6 +3,7 @@
 import { useAllCausesForAdminQuery } from "@/redux/features/cause/cause.api";
 import Spinner from "../common/Spinner";
 import Image from "next/image";
+import CausesUpdateModal from "./CausesUpdateModal";
 
 const CausesCard = () => {
   const { data, isFetching } = useAllCausesForAdminQuery(undefined);
@@ -42,23 +43,25 @@ const CausesCard = () => {
           </div>
 
           <div className="space-y-4">
-            <div className="flex gap-2 justify-between items-center">
+            <div
+              className={`${
+                item.status === "PENDING_FOR_APPROVAL" ? "flex" : "hidden"
+              }  gap-2 justify-between items-center`}
+            >
               <h2 className="text-xl font-medium">Open for founding</h2>
-              {item.status === "PENDING_FOR_APPROVAL" && (
-                <button className="bg-primary px-5 py-2 rounded-full">
-                  Confirm
-                </button>
-              )}
+              <CausesUpdateModal
+                data={{ id: item.id, status: "OPEN_FOR_FOUNDING" }}
+              />
             </div>
 
             {item.status !== "PENDING_FOR_APPROVAL" && (
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
-                  <p>Price: 123</p>
-                  <p>Specifications: higth:2cm\nwight:3cm</p>
+                  <p>Price: {item?.price}</p>
+                  <p>Specifications: {item?.specifications}</p>
                 </div>
                 <Image
-                  src={item?.cause?.images[0]}
+                  src={item?.specificationImage}
                   alt="image"
                   width={1000}
                   height={800}
@@ -68,7 +71,7 @@ const CausesCard = () => {
             )}
           </div>
 
-          <div
+          {/* <div
             className={`space-y-4 ${
               item.status === "PENDING_FOR_APPROVAL" && "hidden"
             }`}
@@ -97,7 +100,7 @@ const CausesCard = () => {
                 />
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       ))}
     </div>

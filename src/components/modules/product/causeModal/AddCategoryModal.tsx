@@ -24,8 +24,14 @@ const AddCategoryModal = () => {
   const onSubmit = async (data: FieldValues) => {
     const toastId = toast.loading("Adding Category...");
 
+    const formData = new FormData();
+
+    formData.append("image", data.image);
+
+    formData.append("data", JSON.stringify({ name: data.name }));
+
     try {
-      const res: any = await addCatrgory(data);
+      const res: any = await addCatrgory(formData);
       if (res.data) {
         toast.success("Cause Added Successfully", { id: toastId });
         setOpen(false);
@@ -84,6 +90,15 @@ const AddCategoryModal = () => {
                   name="name"
                   inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
                   placeholder="Enter Catrgory"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="md:text-3xl font-medium">Category Image</h3>
+                <MyFormInput
+                  type="file"
+                  name="image"
+                  inputClassName="md:py-5 py-3 md:px-7 px-5 rounded-full"
+                  placeholder="Enter Catrgory Image"
                 />
               </div>
             </MyFormWrapper>

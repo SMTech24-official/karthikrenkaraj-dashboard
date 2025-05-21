@@ -2,33 +2,34 @@
 import { useState, useEffect } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { HiEye, HiEyeOff } from "react-icons/hi"; // React Icons
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
 
 interface RadioOption {
   value: string;
   label: string;
-  image?: string; // Optional image for radio label
+  image?: string;
 }
 
 interface MyFormInputProps {
-  type?: string; // Input type, defaults to "text"
-  name: string; // Field name for react-hook-form
-  label?: string; // Label text
-  onValueChange?: (value: string) => void; // Optional callback for value changes
-  placeholder?: string; // Optional placeholder text
-  required?: boolean; // Optional required validation, default is true
-  className?: string; // Custom className for input container
-  labelClassName?: string; // Custom className for label
-  inputClassName?: string; // Custom className for input
-  rows?: number; // Number of rows for textarea
-  radioOptions?: RadioOption[]; // Options for radio buttons
-  radioGroupClassName?: string; // Custom className for radio group parent
-  radioLabelClassName?: string; // Custom className for radio label
-  radioInputClassName?: string; // Custom className for radio input
-  radioImageClassName?: string; // Custom className for image
-  radioItemClassName?: string; // Custom className for radio items
-  isMultiple?: boolean
+  type?: string;
+  name: string;
+  label?: string;
+  onValueChange?: (value: string) => void;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+  labelClassName?: string;
+  inputClassName?: string;
+  rows?: number;
+  radioOptions?: RadioOption[];
+  radioGroupClassName?: string;
+  radioLabelClassName?: string;
+  radioInputClassName?: string;
+  radioImageClassName?: string;
+  radioItemClassName?: string;
+  isMultiple?: boolean;
+  disabled?: boolean;
 }
 
 const MyFormInput = ({
@@ -49,11 +50,12 @@ const MyFormInput = ({
   radioImageClassName,
   radioItemClassName,
   isMultiple = false,
+  disabled = false,
 }: MyFormInputProps) => {
   const { control, getValues, setValue } = useFormContext();
   const inputValue = useWatch({ control, name }) ?? ""; // Ensure no undefined value
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  // const [preview, setPreview] = useState<string | null>(null); // Preview for file input
+  const [preview, setPreview] = useState<string[] | null>([]);
 
   useEffect(() => {
     if (onValueChange) {
@@ -72,7 +74,10 @@ const MyFormInput = ({
       {label && (
         <label
           htmlFor={name}
-          className={cn("text-sm font-medium", labelClassName)}
+          className={cn(
+            "md:text-xl text-[15px] text-grayText font-medium mb-1",
+            labelClassName
+          )}
         >
           {label}
         </label>
@@ -81,58 +86,100 @@ const MyFormInput = ({
         name={name}
         control={control}
         defaultValue={getValues(name) ?? radioOptions?.[0]?.value ?? ""} // Ensures controlled behavior
-        rules={required ? { required: `This field is required` } : {}}
+        rules={
+          required
+            ? {
+                required: `${
+                  label ? `${label} is required` : "This field is required"
+                }`,
+              }
+            : {}
+        }
         render={({ field, fieldState: { error } }) => (
           <div className="relative">
             {/* File Input Handling */}
             {type === "file" ? (
               <div className="flex flex-col gap-2">
-                <input
-                  type="file"
-                  id={name}
-                  accept="image/*"
-                  multiple={isMultiple}
+                <label
+                  htmlFor={name}
                   className={cn(
-                    "w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 cursor-pointer",
-                    error ? "border-red-500" : "border-gray-300",
+                    "border border-dashed border-gray-500 rounded-lg p-6 flex flex-col items-center justify-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors relative overflow-hidden",
+                    "min-h-[100px]",
+                    error ? "border-red-500" : "",
                     inputClassName
                   )}
-                  onChange={(e) => {
-                    const files = e.target.files;
-                    if (files) {
-                      // setValue(name, file);
-                      if (isMultiple) {
-                        // If multiple files are allowed, store the array of files
-                        setValue(name, Array.from(files)); 
-                      } else {
-                        // If only one file is allowed, store the first selected file
-                        setValue(name, files[0]);
+                >
+                  {preview && preview.length > 0 ? (
+                    <div className="absolute inset-0 w-full h-full flex gap-2 justify-evenly p-2">
+                      {preview.map((item, idx) => (
+                        <Image
+                          key={idx}
+                          src={item}
+                          alt={`Preview ${idx + 1}`}
+                          fill={false}
+                          width={100}
+                          height={100}
+                          className="object-contain"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-gray-500 mb-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                      </div>
+                      <p className="text-gray-700 text-center">Upload Images</p>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    id={name}
+                    accept="image/*"
+                    multiple={isMultiple}
+                    className="hidden"
+                    disabled={disabled}
+                    onChange={(e) => {
+                      const files = e.target.files;
+                      if (files && files.length > 0) {
+                        const fileArray = Array.from(files);
+                        setValue(name, isMultiple ? fileArray : fileArray[0]);
+
+                        const previewUrls = fileArray.map((file) =>
+                          URL.createObjectURL(file)
+                        );
+                        setPreview(previewUrls);
                       }
-                    }
-                  }}
-                />
-                {/* {preview && (
-                  <Image
-                    src={preview}
-                    alt="Preview"
-                    width={100}
-                    height={100}
-                    className="rounded-md border"
+                    }}
                   />
-                )} */}
+                </label>
               </div>
             ) : type === "textarea" ? (
               <textarea
                 {...field}
                 id={name}
                 placeholder={placeholder}
-                rows={rows || 3} // Default to 3 rows if not provided
+                rows={rows || 3}
+                disabled={disabled}
                 className={cn(
-                  "w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2",
+                  "w-full px-4 py-3 md:text-[17px] rounded-md focus:outline-none focus:ring-2 bg-[#f5f7f9]",
                   error ? "border-red-500" : "border-gray-300",
                   inputClassName
                 )}
-                value={field.value ?? ""} // Ensures controlled component
+                value={field.value ?? ""}
               />
             ) : type === "radio" && radioOptions ? (
               <div className={cn("flex flex-col gap-2", radioGroupClassName)}>
@@ -148,13 +195,14 @@ const MyFormInput = ({
                       {...field}
                       type="radio"
                       value={option.value}
+                      disabled={disabled}
                       checked={field.value === option.value}
                       className={cn("form-radio", radioInputClassName)}
                     />
                     <div className={cn("flex gap-2", radioItemClassName)}>
                       {option?.image && (
                         <Image
-                          src={option.image}
+                          src={option.image || "/placeholder.svg"}
                           alt={option.label}
                           width={100}
                           height={100}
@@ -179,11 +227,12 @@ const MyFormInput = ({
                     : type
                 }
                 className={cn(
-                  "w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2",
+                  "w-full px-4 py-3 md:text-[17px] rounded-md focus:outline-none focus:ring-2 bg-[#f5f7f9]",
                   error ? "border-red-500" : "border-gray-300",
                   inputClassName
                 )}
-                value={field.value ?? ""} // Ensures controlled component
+                value={field.value ?? ""}
+                disabled={disabled}
               />
             )}
             {/* Password Toggle Button */}
@@ -194,9 +243,9 @@ const MyFormInput = ({
                 className="absolute right-3 top-1/3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 {isPasswordVisible ? (
-                  <HiEyeOff size={20} />
+                  <FiEye size={20} />
                 ) : (
-                  <HiEye size={20} />
+                  <FiEyeOff size={20} />
                 )}
               </button>
             )}
