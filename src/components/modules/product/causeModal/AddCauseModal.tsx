@@ -57,6 +57,14 @@ const AddCauseModal = () => {
       return;
     }
 
+    const selectedImagesa = Array.isArray(data.images)
+      ? data.images
+      : [data.images];
+    if (!selectedImagesa || selectedImagesa.length < 3) {
+      toast.error("Please upload at least 3 images.", { id: toastId });
+      return;
+    }
+
     const priceData = data.priceList;
 
     const priceList = priceData.map((item: any) => {
